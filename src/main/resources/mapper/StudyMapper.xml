@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.jane.portfolio.mapper.StudyMapper">
+
+    <!-- Create: 새로운 스터디 포스트 추가 -->
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO study (title, content, keywords, imageUrl, created_at)
+        VALUES (#{title}, #{content}, #{keywords}, #{imageUrl}, CURRENT_TIMESTAMP)
+    </insert>
+
+    <!-- Read: 모든 스터디 포스트 조회 -->
+    <select id="findAll" resultType="com.jane.portfolio.domain.StudyVO">
+        SELECT id, title, content, keywords, imageUrl, created_at
+        FROM study
+        ORDER BY created_at DESC
+    </select>
+
+    <!-- Read: 특정 스터디 포스트 조회 (ID로 조회) -->
+    <select id="getStudyById" parameterType="Long" resultType="com.jane.portfolio.domain.StudyVO">
+        SELECT id, title, content, keywords, imageUrl, created_at
+        FROM study
+        WHERE id = #{id}
+    </select>
+
+    <!-- 키워드로 스터디 포스트 조회 -->
+    <select id="getStudiesByKeyword" parameterType="String" resultType="com.jane.portfolio.domain.StudyVO">
+        SELECT id, title, content, keywords, imageUrl, created_at
+        FROM study
+        WHERE keywords LIKE CONCAT('%', #{keyword}, '%')
+        ORDER BY created_at DESC
+    </select>
+
+    <!-- Update: 스터디 포스트 수정 -->
+    <update id="update">
+        UPDATE study
+        SET title = #{title},
+            content = #{content},
+            keywords = #{keywords},
+            imageUrl = #{imageUrl}
+        WHERE id = #{id}
+    </update>
+
+    <!-- Delete: 스터디 포스트 삭제 -->
+    <delete id="delete" parameterType="Long">
+        DELETE FROM study
+        WHERE id = #{id}
+    </delete>
+
+</mapper>
