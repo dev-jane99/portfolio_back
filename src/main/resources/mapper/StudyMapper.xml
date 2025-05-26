@@ -1,51 +1,93 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="com.jane.portfolio.mapper.StudyMapper">
 
-    <!-- Create: 새로운 스터디 포스트 추가 -->
+    <!-- ✅ Study 등록 -->
     <insert id="insert" useGeneratedKeys="true" keyProperty="id">
-        INSERT INTO study (title, content, keywords, imageUrl, created_at)
-        VALUES (#{title}, #{content}, #{keywords}, #{imageUrl}, CURRENT_TIMESTAMP)
+        INSERT INTO study (title, content, keywords, created_at)
+        VALUES (#{title}, #{content}, #{keywords}, CURRENT_TIMESTAMP)
     </insert>
 
-    <!-- Read: 모든 스터디 포스트 조회 -->
-    <select id="findAll" resultType="com.jane.portfolio.domain.StudyVO">
-        SELECT id, title, content, keywords, imageUrl, created_at
-        FROM study
-        ORDER BY created_at DESC
-    </select>
+    <!-- ✅ 이미지 등록 -->
+    <insert id="insertImage">
+        INSERT INTO image (study_id, image_url)
+        VALUES (#{studyId}, #{imageUrl})
+    </insert>
 
-    <!-- Read: 특정 스터디 포스트 조회 (ID로 조회) -->
-    <select id="getStudyById" parameterType="Long" resultType="com.jane.portfolio.domain.StudyVO">
-        SELECT id, title, content, keywords, imageUrl, created_at
-        FROM study
-        WHERE id = #{id}
-    </select>
-
-    <!-- 키워드로 스터디 포스트 조회 -->
-    <select id="getStudiesByKeyword" parameterType="String" resultType="com.jane.portfolio.domain.StudyVO">
-        SELECT id, title, content, keywords, imageUrl, created_at
-        FROM study
-        WHERE keywords LIKE CONCAT('%', #{keyword}, '%')
-        ORDER BY created_at DESC
-    </select>
-
-    <!-- Update: 스터디 포스트 수정 -->
+    <!-- ✅ Study 수정 -->
     <update id="update">
         UPDATE study
         SET title = #{title},
             content = #{content},
-            keywords = #{keywords},
-            imageUrl = #{imageUrl}
+            keywords = #{keywords}
         WHERE id = #{id}
     </update>
 
-    <!-- Delete: 스터디 포스트 삭제 -->
+    <!-- ✅ 이미지 삭제 (수정 시 전체 삭제 후 재삽입) -->
+    <delete id="deleteImagesByStudyId" parameterType="Long">
+        DELETE FROM image
+        WHERE study_id = #{studyId}
+    </delete>
+
+    <!-- ✅ Study 삭제 -->
     <delete id="delete" parameterType="Long">
         DELETE FROM study
         WHERE id = #{id}
     </delete>
 
+    <!-- ✅ 전체 조회 (Study + 이미지 리스트 포함) -->
+    <select id="findAll" resultMap="StudyWithImagesMap">
+        SELECT 
+            s.id, s.title, s.content, s.keywords, s.created_at,
+            i.id AS image_id, i.study_id, i.image_url
+        FROM study s
+        LEFT JOIN image i ON s.id = i.study_id
+        ORDER BY s.created_at DESC
+    </select>
+
+    <!-- ✅ ID로 단건 조회 (Study + 이미지 포함) -->
+    <select id="getStudyById" parameterType="Long" resultMap="StudyWithImagesMap">
+        SELECT 
+            s.id, s.title, s.content, s.keywords, s.created_at,
+            i.id AS image_id, i.study_id, i.image_url
+        FROM study s
+        LEFT JOIN image i ON s.id = i.study_id
+        WHERE s.id = #{id}
+    </select>
+
+    <!-- ✅ 키워드 검색 (Study + 이미지 포함) -->
+    <select id="getStudyByKeyword" parameterType="String" resultMap="StudyWithImagesMap">
+        SELECT 
+            s.id, s.title, s.content, s.keywords, s.created_at,
+            i.id AS image_id, i.study_id, i.image_url
+        FROM study s
+        LEFT JOIN image i ON s.id = i.study_id
+        WHERE s.keywords LIKE CONCAT('%', #{keyword}, '%')
+        ORDER BY s.created_at DESC
+    </select>
+
+    <!-- ✅ 이미지 목록만 조회 (선택적으로 사용할 수 있음) -->
+    <select id="findImagesByStudyId" parameterType="Long" resultType="com.jane.portfolio.domain.ImageVO">
+        SELECT id, study_id, image_url
+        FROM image
+        WHERE study_id = #{studyId}
+    </select>
+
+    <!-- ✅ ResultMap: Study + List<ImageVO> -->
+    <resultMap id="StudyWithImagesMap" type="com.jane.portfolio.domain.StudyVO">
+        <id property="id" column="id"/>
+        <result property="title" column="title"/>
+        <result property="content" column="content"/>
+        <result property="keywords" column="keywords"/>
+        <result property="createdAt" column="created_at"/>
+
+        <collection property="images" ofType="com.jane.portfolio.domain.ImageVO">
+            <id property="id" column="image_id"/>
+            <result property="studyId" column="study_id"/>
+            <result property="imageUrl" column="image_url"/>
+        </collection>
+    </resultMap>
 </mapper>

@@ -5,6 +5,7 @@ import java.util.Optional;
 
 import org.apache.ibatis.annotations.Mapper;
 
+import com.jane.portfolio.domain.ImageVO;
 import com.jane.portfolio.domain.StudyVO;
 
 @Mapper
@@ -27,4 +28,13 @@ public interface StudyMapper {
 
     // get by keyword 키워드로 조회하기
     public List<StudyVO> getStudyByKeyword(String keyword);
+
+     // 사진 등록
+    void insertImage(ImageVO imageVO);
+
+    // 사진 조회
+    List<ImageVO> findImagesByStudyId(Long studyId);
+
+    // 사진 삭제
+    void deleteImagesByStudyId(Long studyId);
 }

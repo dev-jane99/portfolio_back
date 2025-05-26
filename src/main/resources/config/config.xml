@@ -3,5 +3,6 @@
 <configuration>
     <typeAliases>
       <typeAlias type="com.jane.portfolio.domain.StudyVO" alias="StudyVO" />
+      <typeAlias type="com.jane.portfolio.domain.ImageVO" alias="ImageVO" />
     </typeAliases>
 </configuration>

@@ -5,6 +5,7 @@ import java.util.Optional;
 
 import org.springframework.stereotype.Repository;
 
+import com.jane.portfolio.domain.ImageVO;
 import com.jane.portfolio.domain.StudyVO;
 import com.jane.portfolio.mapper.StudyMapper;
 
@@ -19,6 +20,12 @@ public class StudyDAO {
     // 등록 new post
     public void insert(StudyVO studyVO) {
         studyMapper.insert(studyVO);
+        if (studyVO.getImages() != null && !studyVO.getImages().isEmpty()) {
+            for (ImageVO image : studyVO.getImages()) {
+                image.setStudyId(studyVO.getId()); // FK 세팅
+                studyMapper.insertImage(image);
+            }
+        }
     }
 
     // 전체 조회 find all
@@ -34,6 +41,15 @@ public class StudyDAO {
     // 수정 update
     public void update(StudyVO studyVO) {
         studyMapper.update(studyVO);
+        
+        studyMapper.deleteImagesByStudyId(studyVO.getId());
+
+        if (studyVO.getImages() != null && !studyVO.getImages().isEmpty()) {
+            for (ImageVO image : studyVO.getImages()) {
+                image.setStudyId(studyVO.getId());
+                studyMapper.insertImage(image);
+            }
+        }
     }
 
     // 삭제 delete
