@@ -5,19 +5,19 @@
 
 <mapper namespace="com.jane.portfolio.mapper.StudyMapper">
 
-    <!-- ✅ Study 등록 -->
+    <!-- Study 등록 -->
     <insert id="insert" useGeneratedKeys="true" keyProperty="id">
         INSERT INTO study (title, content, keywords, created_at)
         VALUES (#{title}, #{content}, #{keywords}, CURRENT_TIMESTAMP)
     </insert>
 
-    <!-- ✅ 이미지 등록 -->
+    <!-- 이미지 등록 -->
     <insert id="insertImage">
         INSERT INTO image (study_id, image_url)
         VALUES (#{studyId}, #{imageUrl})
     </insert>
 
-    <!-- ✅ Study 수정 -->
+    <!-- Study 수정 -->
     <update id="update">
         UPDATE study
         SET title = #{title},
@@ -26,19 +26,19 @@
         WHERE id = #{id}
     </update>
 
-    <!-- ✅ 이미지 삭제 (수정 시 전체 삭제 후 재삽입) -->
+    <!-- 이미지 삭제 -->
     <delete id="deleteImagesByStudyId" parameterType="Long">
         DELETE FROM image
         WHERE study_id = #{studyId}
     </delete>
 
-    <!-- ✅ Study 삭제 -->
+    <!-- Study 삭제 -->
     <delete id="delete" parameterType="Long">
         DELETE FROM study
         WHERE id = #{id}
     </delete>
 
-    <!-- ✅ 전체 조회 (Study + 이미지 리스트 포함) -->
+    <!-- 전체 조회  -->
     <select id="findAll" resultMap="StudyWithImagesMap">
         SELECT 
             s.id, s.title, s.content, s.keywords, s.created_at,
@@ -48,7 +48,7 @@
         ORDER BY s.created_at DESC
     </select>
 
-    <!-- ✅ ID로 단건 조회 (Study + 이미지 포함) -->
+    <!-- ID로 단건 조회 -->
     <select id="getStudyById" parameterType="Long" resultMap="StudyWithImagesMap">
         SELECT 
             s.id, s.title, s.content, s.keywords, s.created_at,
@@ -58,7 +58,7 @@
         WHERE s.id = #{id}
     </select>
 
-    <!-- ✅ 키워드 검색 (Study + 이미지 포함) -->
+    <!-- 키워드 검색 -->
     <select id="getStudyByKeyword" parameterType="String" resultMap="StudyWithImagesMap">
         SELECT 
             s.id, s.title, s.content, s.keywords, s.created_at,
@@ -69,14 +69,14 @@
         ORDER BY s.created_at DESC
     </select>
 
-    <!-- ✅ 이미지 목록만 조회 (선택적으로 사용할 수 있음) -->
+    <!--이미지 목록만 조회 -->
     <select id="findImagesByStudyId" parameterType="Long" resultType="com.jane.portfolio.domain.ImageVO">
         SELECT id, study_id, image_url
         FROM image
         WHERE study_id = #{studyId}
     </select>
 
-    <!-- ✅ ResultMap: Study + List<ImageVO> -->
+
     <resultMap id="StudyWithImagesMap" type="com.jane.portfolio.domain.StudyVO">
         <id property="id" column="id"/>
         <result property="title" column="title"/>
@@ -85,7 +85,7 @@
         <result property="createdAt" column="created_at"/>
 
         <collection property="images" ofType="com.jane.portfolio.domain.ImageVO">
-            <id property="id" column="image_id"/>
+            <result property="id" column="image_id"/>
             <result property="studyId" column="study_id"/>
             <result property="imageUrl" column="image_url"/>
         </collection>

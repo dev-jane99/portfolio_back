@@ -1,6 +1,7 @@
 package com.jane.portfolio.domain;
 
-import java.security.Timestamp;
+import java.sql.Timestamp;
+import java.util.List;
 
 import org.springframework.stereotype.Component;
 
@@ -12,7 +13,7 @@ public class StudyVO {
     private Long id;             
     private String title;        
     private String content;      
-    private String keywords;     
-    private String imageUrl;     
-    private Timestamp createdAt;  
+    private String keywords;   
+    private Timestamp createdAt;
+    private List<ImageVO> images;  
 }
