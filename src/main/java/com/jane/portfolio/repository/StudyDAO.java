@@ -22,7 +22,7 @@ public class StudyDAO {
         studyMapper.insert(studyVO);
         if (studyVO.getImages() != null && !studyVO.getImages().isEmpty()) {
             for (ImageVO image : studyVO.getImages()) {
-                image.setStudyId(studyVO.getId()); // FK 세팅
+                image.setStudyId(studyVO.getId()); 
                 studyMapper.insertImage(image);
             }
         }

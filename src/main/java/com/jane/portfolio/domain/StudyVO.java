@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component;
 
 import lombok.Data;
 
-@Component
+// @Component
 @Data
 public class StudyVO {
     private Long id;             
@@ -15,5 +15,7 @@ public class StudyVO {
     private String content;      
     private String keywords;   
     private Timestamp createdAt;
+
     private List<ImageVO> images;  
+    
 }
